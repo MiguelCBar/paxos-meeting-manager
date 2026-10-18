@@ -1,0 +1,59 @@
+//
+// Protocol buffers definition for DidaMeetings Paxos Service
+//
+syntax = "proto3";
+package didameetings;
+
+
+// MULTI-PAXOS
+message PhaseOneRequest {
+  int32 requestballot         = 1;
+}
+
+
+// MULTI-PAXOS PHASE1 REPLY
+message PhaseOneReply {
+  repeated PhaseOneInstance logs = 1;  // All Paxos Instance Logs from instance 0
+  bool accepted = 2;
+  int32 maxballot = 3;
+}
+
+// PAXOS INSTANCE FOR MULTI-PAXOS PHASE1 REPLY
+message PhaseOneInstance {
+  int32 instance = 1;
+  int32 serverid = 2;
+  int32 requestballot = 3; 
+  int32 commandid = 4;
+  int32 valballot = 5;
+}
+
+message PhaseTwoRequest {
+  int32 instance        = 1;
+  int32 requestballot   = 2;
+  int32 commandid       = 3;
+}
+
+message PhaseTwoReply {
+  int32 instance        = 1;
+  int32 serverid        = 2;
+  int32 requestballot   = 3;
+  bool  accepted        = 4;
+  int32 maxballot       = 5;
+}
+
+message LearnRequest {
+  int32 instance   = 1;
+  int32 ballot     = 2;
+  int32 commandid  = 3;
+}
+
+message LearnReply {
+  int32 instance   = 1;
+  int32 ballot     = 2;
+}
+
+service DidaMeetingsPaxosService {
+  rpc phaseone (PhaseOneRequest) returns (PhaseOneReply);
+  rpc phasetwo (PhaseTwoRequest) returns (PhaseTwoReply);
+  rpc learn (LearnRequest) returns (LearnReply);
+}
